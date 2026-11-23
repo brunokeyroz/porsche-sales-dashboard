@@ -161,7 +161,7 @@ As capturas de tela abaixo demonstram a interface da dashboard e o funcionamento
 
 A primeira captura apresenta a dashboard em sua visualização inicial, permitindo observar os indicadores de desempenho (KPIs), os gráficos estratégicos e a tabela de transações.
 
-<img width="1600" height="773" alt="Visão geral da dashboard" src="https://github.com/user-attachments/assets/115c9614-4bc0-4354-a8aa-f1e08ebe6b02" />
+![Visão geral da dashboard](assets/visao-geral-dashboard.png)
 
 
 ### 7.2. Exemplo de filtro aplicado — Porsche 718 Cayman
@@ -170,7 +170,7 @@ Nesta demonstração, o filtro **Modelo do Veículo** foi configurado para `718 
 
 A aplicação do filtro atualiza os indicadores, os gráficos e a tabela de transações, permitindo analisar os resultados referentes ao modelo selecionado.
 
-<img width="1600" height="772" alt="Exemplo de filtro aplicado — Porsche 718 Cayman" src="https://github.com/user-attachments/assets/94d0aa0b-9094-4bbf-a5a2-5a32b6078cd5" />
+![Exemplo de filtro aplicado — Porsche 718 Cayman](assets/filtro-porsche-718-cayman.png)
 
 
 **O que esta evidência demonstra:**
