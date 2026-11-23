@@ -1,0 +1,1954 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Porsche Brasil | Executive Sales & Performance Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        porsche: {
+                            bg: '#0b0c0e',
+                            card: '#14161f',
+                            border: '#222634',
+                            red: '#d5001c',
+                            redHover: '#b00017',
+                            textMuted: '#94a3b8',
+                            silver: '#e2e8f0'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b0c0e;
+            color: #e2e8f0;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0c0e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222634;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d5001c;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-porsche-red selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="border-b border-porsche-border bg-porsche-bg/90 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3">
+                    <span class="text-xl sm:text-2xl font-bold tracking-[0.3em] text-white uppercase">PORSCHE</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-porsche-red/10 text-porsche-red border border-porsche-red/30 tracking-widest font-semibold uppercase">Executive BI</span>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center space-x-6 text-xs text-porsche-textMuted">
+                <span>Base Sanitizada: <strong class="text-white">100 Transações</strong></span>
+                <span class="h-4 w-px bg-porsche-border"></span>
+                <span class="text-white font-medium">Ambiente Web Nativo</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        <!-- Barra de Filtros Dinâmicos -->
+        <section class="bg-porsche-card border border-porsche-border rounded-xl p-5 shadow-2xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 mb-4 border-b border-porsche-border gap-4">
+                <div>
+                    <h2 class="text-sm font-semibold tracking-wide text-white uppercase flex items-center gap-2">
+                        <svg class="w-4 h-4 text-porsche-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        Filtros Globais de Análise
+                    </h2>
+                    <p class="text-xs text-porsche-textMuted">Filtre simultaneamente todos os indicadores, KPIs e gráficos da dashboard</p>
+                </div>
+                <button id="resetFilters" class="self-start md:self-auto text-xs px-4 py-2 rounded-lg bg-porsche-border hover:bg-porsche-red hover:text-white transition-all duration-200 font-medium tracking-wide">
+                    Limpar Filtros
+                </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Filtro Modelo -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-porsche-textMuted uppercase mb-1.5">Modelo do Veículo</label>
+                    <select id="filterModel" class="w-full bg-porsche-bg border border-porsche-border rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-porsche-red transition-colors">
+                        <option value="">Todos os Modelos</option>
+                    </select>
+                </div>
+                <!-- Filtro Estado -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-porsche-textMuted uppercase mb-1.5">Estado (State)</label>
+                    <select id="filterState" class="w-full bg-porsche-bg border border-porsche-border rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-porsche-red transition-colors">
+                        <option value="">Todos os Estados</option>
+                    </select>
+                </div>
+                <!-- Filtro Forma de Pagamento -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-porsche-textMuted uppercase mb-1.5">Forma de Pagamento</label>
+                    <select id="filterPay" class="w-full bg-porsche-bg border border-porsche-border rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-porsche-red transition-colors">
+                        <option value="">Todas as Formas</option>
+                    </select>
+                </div>
+                <!-- Filtro Ano do Modelo -->
+                <div>
+                    <label class="block text-[11px] font-semibold text-porsche-textMuted uppercase mb-1.5">Ano do Modelo</label>
+                    <select id="filterYear" class="w-full bg-porsche-bg border border-porsche-border rounded-lg px-3 py-2.5 text-xs text-white focus:outline-none focus:border-porsche-red transition-colors">
+                        <option value="">Todos os Anos</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Indicadores de Topo (KPI Cards) -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <!-- Faturamento Total -->
+            <div class="bg-porsche-card border border-porsche-border rounded-xl p-5 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-porsche-red"></div>
+                <span class="text-[11px] text-porsche-textMuted uppercase tracking-wider font-semibold">Faturamento Total</span>
+                <div id="kpiRevenue" class="text-2xl font-bold text-white mt-2">$0.00M</div>
+                <span class="text-[10px] text-porsche-textMuted mt-1 block">Receita consolidada líquida</span>
+            </div>
+            <!-- Volume de Veículos -->
+            <div class="bg-porsche-card border border-porsche-border rounded-xl p-5 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-porsche-red"></div>
+                <span class="text-[11px] text-porsche-textMuted uppercase tracking-wider font-semibold">Volume de Veículos</span>
+                <div id="kpiVolume" class="text-2xl font-bold text-white mt-2">0 un</div>
+                <span class="text-[10px] text-porsche-textMuted mt-1 block">Automóveis comercializados</span>
+            </div>
+            <!-- Ticket Médio -->
+            <div class="bg-porsche-card border border-porsche-border rounded-xl p-5 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-porsche-red"></div>
+                <span class="text-[11px] text-porsche-textMuted uppercase tracking-wider font-semibold">Ticket Médio</span>
+                <div id="kpiTicket" class="text-2xl font-bold text-white mt-2">$0.0k</div>
+                <span class="text-[10px] text-porsche-textMuted mt-1 block">Preço médio por unidade</span>
+            </div>
+            <!-- Taxa de Entregas Realizadas -->
+            <div class="bg-porsche-card border border-porsche-border rounded-xl p-5 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-porsche-red"></div>
+                <span class="text-[11px] text-porsche-textMuted uppercase tracking-wider font-semibold">Taxa de Entregas</span>
+                <div id="kpiDeliveryRate" class="text-2xl font-bold text-white mt-2">0.0%</div>
+                <span class="text-[10px] text-porsche-textMuted mt-1 block">Status "Delivered"</span>
+            </div>
+            <!-- Fatia E-Performance -->
+            <div class="bg-porsche-card border border-porsche-border rounded-xl p-5 shadow-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-porsche-red"></div>
+                <span class="text-[11px] text-porsche-textMuted uppercase tracking-wider font-semibold">Fatia E-Performance</span>
+                <div id="kpiEPerformance" class="text-2xl font-bold text-white mt-2">0.0%</div>
+                <span class="text-[10px] text-porsche-textMuted mt-1 block">Elétricos & Híbridos (Receita)</span>
+            </div>
+        </section>
+
+        <!-- Três Perguntas de Negócio (Gráficos) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- PERGUNTA 1: Rentabilidade e Mix de Produtos -->
+            <div class="bg-porsche-card border border-porsche-border rounded-xl p-6 shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-porsche-red/10 text-porsche-red font-bold uppercase tracking-wider">Pergunta 1</span>
+                        <span class="text-xs text-porsche-textMuted">Receita & Ticket Médio</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-white mb-1">O faturamento é sustentado por alto giro ou margem extrema?</h3>
+                    <p class="text-xs text-porsche-textMuted mb-6">Compara a receita total gerada por modelo com o respectivo ticket médio unitário para identificar se o resultado vem de maior volume de vendas ou de veículos de maior valor agregado.</p>
+                </div>
+                <div class="relative h-80 w-full">
+                    <canvas id="chartQ1"></canvas>
+                </div>
+            </div>
+
+            <!-- PERGUNTA 2: Transição E-Performance & Eletrificação -->
+            <div class="bg-porsche-card border border-porsche-border rounded-xl p-6 shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-porsche-red/10 text-porsche-red font-bold uppercase tracking-wider">Pergunta 2</span>
+                        <span class="text-xs text-porsche-textMuted">Matriz Energética</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-white mb-1">Qual a representatividade de Elétricos e Híbridos vs. Combustão?</h3>
+                    <p class="text-xs text-porsche-textMuted mb-6">Mostra como o faturamento se divide entre modelos 100% a combustão, 100% elétricos (Taycan e Macan Electric) e híbridos (E-Hybrid), evidenciando o peso da eletrificação na receita.</p>
+                </div>
+                <div class="relative h-80 w-full flex items-center justify-center">
+                    <canvas id="chartQ2"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PERGUNTA 3: Saúde Operacional & Risco Financeiro -->
+        <section class="bg-porsche-card border border-porsche-border rounded-xl p-6 shadow-xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[10px] px-2 py-0.5 rounded bg-porsche-red/10 text-porsche-red font-bold uppercase tracking-wider">Pergunta 3</span>
+                        <span class="text-xs text-porsche-textMuted">Logística & Pagamentos</span>
+                    </div>
+                    <h3 class="text-sm font-semibold text-white">Quais meios de pagamento concentram atrasos na entrega ou pendências?</h3>
+                    <p class="text-xs text-porsche-textMuted">Cruza cada forma de pagamento com todos os status operacionais da base (incluindo Delivered, Pending, Pending Approval/Review, In Transit/Shipped e Cancelled) para identificar gargalos e cancelamentos.</p>
+                </div>
+            </div>
+            <div class="relative h-80 w-full">
+                <canvas id="chartQ3"></canvas>
+            </div>
+        </section>
+
+        <!-- Tabela Detalhada de Transações -->
+        <section class="bg-porsche-card border border-porsche-border rounded-xl p-6 shadow-xl overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Extrato Consolidado de Transações</h3>
+                    <p class="text-xs text-porsche-textMuted">Listagem detalhada filtrada em tempo real</p>
+                </div>
+                <span id="rowCount" class="text-xs px-3 py-1 rounded bg-porsche-bg text-porsche-silver border border-porsche-border font-mono">0 registros</span>
+            </div>
+            <div class="overflow-x-auto max-h-96">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-porsche-bg text-porsche-textMuted uppercase tracking-wider sticky top-0 border-b border-porsche-border">
+                        <tr>
+                            <th class="py-3 px-4">ID</th>
+                            <th class="py-3 px-4">Data</th>
+                            <th class="py-3 px-4">Cliente</th>
+                            <th class="py-3 px-4">Modelo</th>
+                            <th class="py-3 px-4">Ano</th>
+                            <th class="py-3 px-4">Local (Cidade/UF)</th>
+                            <th class="py-3 px-4">Pagamento</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4 text-right">Preço (USD)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody" class="divide-y divide-porsche-border/50 text-white font-light">
+                        <!-- Injetado dinamicamente via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-porsche-border bg-porsche-bg mt-16 py-8 text-center text-xs text-porsche-textMuted space-y-1">
+        <p>© 2026 Porsche Brasil - Executive Analytics & Business Intelligence. Todos os direitos reservados.</p>
+        <p class="text-[11px] text-porsche-textMuted/80">Fonte e tratamento: base de 100 vendas da planilha <strong class="text-porsche-silver">Planilha Base Porsche (sanitizada).xlsx</strong> (aba <code class="text-porsche-silver">Sanitized</code>), com campos padronizados, preços em dólares (USD) e datas no padrão ISO.</p>
+    </footer>
+
+    <!-- Dataset Embutido e Lógica JavaScript -->
+    <script>
+        const porscheSalesData = [
+          {
+                    "id": 6,
+                    "date": "2024-02-29",
+                    "customer": "Michael Adams",
+                    "model": "718 Cayman",
+                    "year": 2022,
+                    "price": 79500.0,
+                    "mileage": 9800,
+                    "payMethod": "Credit Card",
+                    "city": "Boston",
+                    "state": "MA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 7,
+                    "date": "2024-03-14",
+                    "customer": "SOPHIA Miller",
+                    "model": "911 Turbo S",
+                    "year": 2024,
+                    "price": 235000.0,
+                    "mileage": 1200,
+                    "payMethod": "Wire Transfer",
+                    "city": "Seattle",
+                    "state": "WA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 8,
+                    "date": "2024-04-18",
+                    "customer": "Daniel-Jones",
+                    "model": "Cayenne Coupe",
+                    "year": 2023,
+                    "price": 112750.0,
+                    "mileage": 6400,
+                    "payMethod": "Financing",
+                    "city": "Austin",
+                    "state": "TX",
+                    "status": "In Transit",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 9,
+                    "date": "2024-04-30",
+                    "customer": "Olivia Brown",
+                    "model": "Macan S",
+                    "year": 2021,
+                    "price": 68900.0,
+                    "mileage": 28,
+                    "payMethod": "Cash",
+                    "city": "Denver",
+                    "state": "CO",
+                    "status": "Pending",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 10,
+                    "date": "2024-05-22",
+                    "customer": "Ethan Wilson",
+                    "model": "Taycan 4S",
+                    "year": 2024,
+                    "price": 121000.0,
+                    "mileage": 0,
+                    "payMethod": "Bank Transfer",
+                    "city": "Los Angeles",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 11,
+                    "date": "2024-08-06",
+                    "customer": "Ava Martinez",
+                    "model": "Panamera 4",
+                    "year": 2022,
+                    "price": 104500.0,
+                    "mileage": 15400,
+                    "payMethod": "Credit Card",
+                    "city": "Miami",
+                    "state": "FL",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 12,
+                    "date": "2024-07-11",
+                    "customer": "Noah Davis",
+                    "model": "911 Carrera S",
+                    "year": 2023,
+                    "price": 96300.0,
+                    "mileage": 4200,
+                    "payMethod": "Lease",
+                    "city": "New York",
+                    "state": "NY",
+                    "status": "Pending Approval",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 13,
+                    "date": "2024-07-15",
+                    "customer": "Isabella Garcia",
+                    "model": "Cayenne E-Hybrid",
+                    "year": 2021,
+                    "price": 89750.0,
+                    "mileage": 11000,
+                    "payMethod": "Wire Transfer",
+                    "city": "San Diego",
+                    "state": "CA",
+                    "status": "Shipped",
+                    "powertrain": "Híbrido (PHEV)"
+          },
+          {
+                    "id": 14,
+                    "date": "2024-08-19",
+                    "customer": "Liam Rodriguez",
+                    "model": "718 Boxster",
+                    "year": 2024,
+                    "price": 73500.0,
+                    "mileage": 8500,
+                    "payMethod": "Debit Card",
+                    "city": "Chicago",
+                    "state": "IL",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 15,
+                    "date": "2024-09-02",
+                    "customer": "Mia Hernandez",
+                    "model": "Macan GTS",
+                    "year": 2023,
+                    "price": 95000.0,
+                    "mileage": 500,
+                    "payMethod": "Financing",
+                    "city": "Phoenix",
+                    "state": "AZ",
+                    "status": "Awaiting Delivery",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 16,
+                    "date": "2024-09-17",
+                    "customer": "James Lopez",
+                    "model": "Taycan Turbo",
+                    "year": 2024,
+                    "price": 153200.5,
+                    "mileage": 3100,
+                    "payMethod": "ACH Payment",
+                    "city": "Dallas",
+                    "state": "TX",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 17,
+                    "date": "2024-10-31",
+                    "customer": "Charlotte Young",
+                    "model": "911 GT3",
+                    "year": 2022,
+                    "price": 210000.0,
+                    "mileage": 2200,
+                    "payMethod": "Cash",
+                    "city": "Philadelphia",
+                    "state": "PA",
+                    "status": "Cancelled",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 18,
+                    "date": "2024-05-11",
+                    "customer": "Benjamin Allen",
+                    "model": "Panamera Turbo S",
+                    "year": 2023,
+                    "price": 132000.0,
+                    "mileage": 8900,
+                    "payMethod": "Bank Transfer",
+                    "city": "San Jose",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 19,
+                    "date": "2024-12-12",
+                    "customer": "Amelia King",
+                    "model": "Cayenne Turbo GT",
+                    "year": 2024,
+                    "price": 188000.0,
+                    "mileage": 150,
+                    "payMethod": "Crypto Payment",
+                    "city": "Houston",
+                    "state": "TX",
+                    "status": "Pending",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 20,
+                    "date": "2024-12-25",
+                    "customer": "Lucas Wright",
+                    "model": "911 Carrera Cabriolet",
+                    "year": 2023,
+                    "price": 127800.0,
+                    "mileage": 1200,
+                    "payMethod": "Credit Card",
+                    "city": "Atlanta",
+                    "state": "GA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 21,
+                    "date": "2025-01-06",
+                    "customer": "Harper Scott",
+                    "model": "Macan",
+                    "year": 2022,
+                    "price": 58900.0,
+                    "mileage": 14200,
+                    "payMethod": "Bank Transfer",
+                    "city": "Orlando",
+                    "state": "FL",
+                    "status": "In Transit",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 22,
+                    "date": "2025-01-31",
+                    "customer": "Evelyn Nguyen",
+                    "model": "Taycan Cross Turismo",
+                    "year": 2024,
+                    "price": 118500.0,
+                    "mileage": 400,
+                    "payMethod": "Wire Transfer",
+                    "city": "Charlotte",
+                    "state": "NC",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 23,
+                    "date": "2025-02-14",
+                    "customer": "Evelyn Green",
+                    "model": "Cayenne E-Hybrid",
+                    "year": 2024,
+                    "price": 99500.0,
+                    "mileage": 400,
+                    "payMethod": "Credit Card",
+                    "city": "San Jose",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "Híbrido (PHEV)"
+          },
+          {
+                    "id": 24,
+                    "date": "2025-02-28",
+                    "customer": "Logan Hill",
+                    "model": "718 Spyder RS",
+                    "year": 2023,
+                    "price": 165000.0,
+                    "mileage": 900,
+                    "payMethod": "Financing",
+                    "city": "San Antonio",
+                    "state": "TX",
+                    "status": "Pending",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 25,
+                    "date": "2025-03-21",
+                    "customer": "Alexander Baker",
+                    "model": "Taycan 4S",
+                    "year": 2023,
+                    "price": 115000.0,
+                    "mileage": 5300,
+                    "payMethod": "Financing",
+                    "city": "Austin",
+                    "state": "TX",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 26,
+                    "date": "2025-03-28",
+                    "customer": "Sofia Gonzalez",
+                    "model": "Panamera 4S",
+                    "year": 2024,
+                    "price": 138000.0,
+                    "mileage": 900,
+                    "payMethod": "Wire Transfer",
+                    "city": "Jacksonville",
+                    "state": "FL",
+                    "status": "In Transit",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 27,
+                    "date": "2025-04-09",
+                    "customer": "Jackson Nelson",
+                    "model": "911 Dakar",
+                    "year": 2024,
+                    "price": 286500.0,
+                    "mileage": 50,
+                    "payMethod": "Cash",
+                    "city": "Fort Worth",
+                    "state": "TX",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 28,
+                    "date": "2025-04-30",
+                    "customer": "Camila Adams",
+                    "model": "Cayenne S",
+                    "year": 2022,
+                    "price": 88900.0,
+                    "mileage": 12000,
+                    "payMethod": "Lease",
+                    "city": "Columbus",
+                    "state": "OH",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 29,
+                    "date": "2025-05-12",
+                    "customer": "Scarlett Carter",
+                    "model": "Macan T",
+                    "year": 2023,
+                    "price": 64500.0,
+                    "mileage": 7800,
+                    "payMethod": "Bank Transfer",
+                    "city": "Columbus",
+                    "state": "OH",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 30,
+                    "date": "2025-06-18",
+                    "customer": "Henry Mitchell",
+                    "model": "718 Cayman GT4 RS",
+                    "year": 2024,
+                    "price": 175000.0,
+                    "mileage": 300,
+                    "payMethod": "Wire Transfer",
+                    "city": "Charlotte",
+                    "state": "NC",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 31,
+                    "date": "2025-06-30",
+                    "customer": "Aria Perez",
+                    "model": "911 Targa 4S",
+                    "year": 2023,
+                    "price": 148900.0,
+                    "mileage": 3400,
+                    "payMethod": "Credit Card",
+                    "city": "Indianapolis",
+                    "state": "IN",
+                    "status": "Pending",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 32,
+                    "date": "2025-07-07",
+                    "customer": "Victoria Perez",
+                    "model": "Cayenne Coupe",
+                    "year": 2023,
+                    "price": 115000.0,
+                    "mileage": 6100,
+                    "payMethod": "Lease",
+                    "city": "San Francisco",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 33,
+                    "date": "2025-07-22",
+                    "customer": "Sebastian Roberts",
+                    "model": "Taycan Turbo S",
+                    "year": 2024,
+                    "price": 215000.0,
+                    "mileage": 200,
+                    "payMethod": "Crypto Payment",
+                    "city": "Indianapolis",
+                    "state": "IN",
+                    "status": "In Transit",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 34,
+                    "date": "2025-08-14",
+                    "customer": "Chloe Turner",
+                    "model": "Panamera",
+                    "year": 2023,
+                    "price": 98000.0,
+                    "mileage": 8400,
+                    "payMethod": "Credit Card",
+                    "city": "Seattle",
+                    "state": "WA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 35,
+                    "date": "2025-09-01",
+                    "customer": "Matthew Phillips",
+                    "model": "911 Carrera GTS",
+                    "year": 2024,
+                    "price": 182000.0,
+                    "mileage": 1100,
+                    "payMethod": "Wire Transfer",
+                    "city": "Denver",
+                    "state": "CO",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 36,
+                    "date": "2025-09-30",
+                    "customer": "Grace Campbell",
+                    "model": "Macan Electric",
+                    "year": 2025,
+                    "price": 78500.0,
+                    "mileage": 0,
+                    "payMethod": "Bank Transfer",
+                    "city": "Washington",
+                    "state": "DC",
+                    "status": "Awaiting Pickup",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 37,
+                    "date": "2025-09-18",
+                    "customer": "Zoey Campbell",
+                    "model": "Macan Electric",
+                    "year": 2025,
+                    "price": 76000.0,
+                    "mileage": 0,
+                    "payMethod": "Bank Transfer",
+                    "city": "Washington",
+                    "state": "DC",
+                    "status": "Pending",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 38,
+                    "date": "2025-10-04",
+                    "customer": "Leo Parker",
+                    "model": "Cayenne S",
+                    "year": 2023,
+                    "price": 109000.0,
+                    "mileage": 5400,
+                    "payMethod": "Financing",
+                    "city": "Boston",
+                    "state": "MA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 39,
+                    "date": "2025-10-12",
+                    "customer": "Penelope Evans",
+                    "model": "718 Spyder RS",
+                    "year": 2024,
+                    "price": 189000.0,
+                    "mileage": 100,
+                    "payMethod": "Cash",
+                    "city": "El Paso",
+                    "state": "TX",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 40,
+                    "date": "2025-10-29",
+                    "customer": "Riley Edwards",
+                    "model": "911 Targa 4",
+                    "year": 2022,
+                    "price": 156000.0,
+                    "mileage": 12500,
+                    "payMethod": "Lease",
+                    "city": "Nashville",
+                    "state": "TN",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 41,
+                    "date": "2025-02-11",
+                    "customer": "Layla Collins",
+                    "model": "Taycan",
+                    "year": 2022,
+                    "price": 89000.0,
+                    "mileage": 16000,
+                    "payMethod": "Credit Card",
+                    "city": "Detroit",
+                    "state": "MI",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 42,
+                    "date": "2025-11-16",
+                    "customer": "David Stewart",
+                    "model": "Macan GTS",
+                    "year": 2023,
+                    "price": 77000.0,
+                    "mileage": 6200,
+                    "payMethod": "Wire Transfer",
+                    "city": "Oklahoma City",
+                    "state": "OK",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 43,
+                    "date": "2025-11-30",
+                    "customer": "Lily Sanchez",
+                    "model": "911 Carrera",
+                    "year": 2023,
+                    "price": 121500.0,
+                    "mileage": 2900,
+                    "payMethod": "ACH Payment",
+                    "city": "Portland",
+                    "state": "OR",
+                    "status": "Pending",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 44,
+                    "date": "2025-12-07",
+                    "customer": "Nora Sanchez",
+                    "model": "Panamera Turbo",
+                    "year": 2022,
+                    "price": 172000.0,
+                    "mileage": 14000,
+                    "payMethod": "Bank Transfer",
+                    "city": "Portland",
+                    "state": "OR",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 45,
+                    "date": "2025-12-22",
+                    "customer": "Wyatt Morris",
+                    "model": "Cayenne Turbo GT",
+                    "year": 2024,
+                    "price": 250000.0,
+                    "mileage": 300,
+                    "payMethod": "Crypto Payment",
+                    "city": "Las Vegas",
+                    "state": "NV",
+                    "status": "In Transit",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 46,
+                    "date": "2025-12-31",
+                    "customer": "Hannah Rogers",
+                    "model": "Taycan GTS",
+                    "year": 2024,
+                    "price": 141200.0,
+                    "mileage": 600,
+                    "payMethod": "Wire Transfer",
+                    "city": "Memphis",
+                    "state": "TN",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 47,
+                    "date": "2026-01-08",
+                    "customer": "Elena Rogers",
+                    "model": "911 Turbo S",
+                    "year": 2025,
+                    "price": 240000.0,
+                    "mileage": 0,
+                    "payMethod": "Wire Transfer",
+                    "city": "Memphis",
+                    "state": "TN",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 48,
+                    "date": "2026-01-15",
+                    "customer": "Carson Reed",
+                    "model": "Macan Electric",
+                    "year": 2026,
+                    "price": 78000.0,
+                    "mileage": 10,
+                    "payMethod": "Financing",
+                    "city": "Louisville",
+                    "state": "KY",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 49,
+                    "date": "2026-01-28",
+                    "customer": "Stella Cook",
+                    "model": "718 Cayman",
+                    "year": 2023,
+                    "price": 82000.0,
+                    "mileage": 4500,
+                    "payMethod": "Cash",
+                    "city": "Baltimore",
+                    "state": "MD",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 50,
+                    "date": "2026-02-03",
+                    "customer": "Gabriel Morgan",
+                    "model": "Cayenne E-Hybrid",
+                    "year": 2024,
+                    "price": 102000.0,
+                    "mileage": 800,
+                    "payMethod": "Credit Card",
+                    "city": "Milwaukee",
+                    "state": "WI",
+                    "status": "Delivered",
+                    "powertrain": "Híbrido (PHEV)"
+          },
+          {
+                    "id": 51,
+                    "date": "2026-02-28",
+                    "customer": "Zoe Bell",
+                    "model": "Panamera 4 E-Hybrid",
+                    "year": 2024,
+                    "price": 116400.0,
+                    "mileage": 200,
+                    "payMethod": "Lease",
+                    "city": "Albuquerque",
+                    "state": "NM",
+                    "status": "Pending",
+                    "powertrain": "Híbrido (PHEV)"
+          },
+          {
+                    "id": 52,
+                    "date": "2026-02-19",
+                    "customer": "Hazel Bell",
+                    "model": "Taycan 4S",
+                    "year": 2025,
+                    "price": 125000.0,
+                    "mileage": 50,
+                    "payMethod": "Wire Transfer",
+                    "city": "Albuquerque",
+                    "state": "NM",
+                    "status": "In Transit",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 53,
+                    "date": "2026-02-25",
+                    "customer": "Julian Murphy",
+                    "model": "Panamera 4 E-Hybrid",
+                    "year": 2023,
+                    "price": 128000.0,
+                    "mileage": 7200,
+                    "payMethod": "Lease",
+                    "city": "Tucson",
+                    "state": "AZ",
+                    "status": "Delivered",
+                    "powertrain": "Híbrido (PHEV)"
+          },
+          {
+                    "id": 54,
+                    "date": "2026-03-01",
+                    "customer": "Ellie Bailey",
+                    "model": "911 Carrera",
+                    "year": 2024,
+                    "price": 135000.0,
+                    "mileage": 1200,
+                    "payMethod": "Bank Transfer",
+                    "city": "Fresno",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 55,
+                    "date": "2026-03-14",
+                    "customer": "Grayson Rivera",
+                    "model": "Macan T",
+                    "year": 2023,
+                    "price": 65000.0,
+                    "mileage": 5100,
+                    "payMethod": "Crypto Payment",
+                    "city": "Sacramento",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 56,
+                    "date": "2026-03-31",
+                    "customer": "Nadia Cooper",
+                    "model": "718 Boxster GTS",
+                    "year": 2023,
+                    "price": 103800.0,
+                    "mileage": 1900,
+                    "payMethod": "Debit Card",
+                    "city": "Kansas City",
+                    "state": "MO",
+                    "status": "Cancelled",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 57,
+                    "date": "2026-04-08",
+                    "customer": "Paisley Cooper",
+                    "model": "Cayenne S",
+                    "year": 2024,
+                    "price": 112000.0,
+                    "mileage": 1500,
+                    "payMethod": "Wire Transfer",
+                    "city": "Kansas City",
+                    "state": "MO",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 58,
+                    "date": "2026-04-30",
+                    "customer": "Eleanor Richardson",
+                    "model": "911 Turbo",
+                    "year": 2023,
+                    "price": 194500.0,
+                    "mileage": 1700,
+                    "payMethod": "Wire Transfer",
+                    "city": "Mesa",
+                    "state": "AZ",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 59,
+                    "date": "2026-04-21",
+                    "customer": "Jonathan Richardson",
+                    "model": "718 Boxster",
+                    "year": 2022,
+                    "price": 83000.0,
+                    "mileage": 13200,
+                    "payMethod": "Financing",
+                    "city": "Mesa",
+                    "state": "AZ",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 60,
+                    "date": "2026-04-29",
+                    "customer": "Audrey Cox",
+                    "model": "Taycan Turbo S",
+                    "year": 2025,
+                    "price": 220000.0,
+                    "mileage": 0,
+                    "payMethod": "Cash",
+                    "city": "Atlanta",
+                    "state": "GA",
+                    "status": "Pending",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 61,
+                    "date": "2026-05-05",
+                    "customer": "Cooper Ward",
+                    "model": "911 GT3 RS",
+                    "year": 2024,
+                    "price": 285000.0,
+                    "mileage": 100,
+                    "payMethod": "Wire Transfer",
+                    "city": "Omaha",
+                    "state": "NE",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 62,
+                    "date": "2026-05-14",
+                    "customer": "Bella Torres",
+                    "model": "Macan GTS",
+                    "year": 2024,
+                    "price": 81000.0,
+                    "mileage": 600,
+                    "payMethod": "Credit Card",
+                    "city": "Colorado Springs",
+                    "state": "CO",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 63,
+                    "date": "2026-05-23",
+                    "customer": "Isaiah Peterson",
+                    "model": "Cayenne Turbo",
+                    "year": 2022,
+                    "price": 195000.0,
+                    "mileage": 17000,
+                    "payMethod": "Bank Transfer",
+                    "city": "Raleigh",
+                    "state": "NC",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 64,
+                    "date": "2026-06-02",
+                    "customer": "Savannah Gray",
+                    "model": "Panamera Turbo S",
+                    "year": 2024,
+                    "price": 198000.0,
+                    "mileage": 500,
+                    "payMethod": "Lease",
+                    "city": "Miami",
+                    "state": "FL",
+                    "status": "In Transit",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 65,
+                    "date": "2026-06-15",
+                    "customer": "Caleb Ramirez",
+                    "model": "718 Cayman GT4 RS",
+                    "year": 2025,
+                    "price": 182000.0,
+                    "mileage": 0,
+                    "payMethod": "Wire Transfer",
+                    "city": "Long Beach",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 66,
+                    "date": "2026-06-30",
+                    "customer": "Madeline James",
+                    "model": "Macan T",
+                    "year": 2024,
+                    "price": 66800.0,
+                    "mileage": 350,
+                    "payMethod": "Financing",
+                    "city": "Virginia Beach",
+                    "state": "VA",
+                    "status": "Pending Approval",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 67,
+                    "date": "2026-07-07",
+                    "customer": "Brooklyn James",
+                    "model": "Taycan GTS",
+                    "year": 2024,
+                    "price": 142000.0,
+                    "mileage": 1100,
+                    "payMethod": "Cash",
+                    "city": "Virginia Beach",
+                    "state": "VA",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 68,
+                    "date": "2026-07-20",
+                    "customer": "Landon Watson",
+                    "model": "911 Dakar",
+                    "year": 2025,
+                    "price": 295000.0,
+                    "mileage": 20,
+                    "payMethod": "Crypto Payment",
+                    "city": "Oakland",
+                    "state": "CA",
+                    "status": "In Transit",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 69,
+                    "date": "2026-07-31",
+                    "customer": "Allison Brooks",
+                    "model": "Cayenne",
+                    "year": 2023,
+                    "price": 84200.0,
+                    "mileage": 4800,
+                    "payMethod": "Credit Card",
+                    "city": "Minneapolis",
+                    "state": "MN",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 70,
+                    "date": "2026-04-08",
+                    "customer": "Addison Brooks",
+                    "model": "Macan",
+                    "year": 2021,
+                    "price": 57000.0,
+                    "mileage": 21000,
+                    "payMethod": "Financing",
+                    "city": "Minneapolis",
+                    "state": "MN",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 71,
+                    "date": "2026-08-18",
+                    "customer": "Miles Kelly",
+                    "model": "Cayenne Coupe",
+                    "year": 2024,
+                    "price": 121000.0,
+                    "mileage": 400,
+                    "payMethod": "Wire Transfer",
+                    "city": "Tulsa",
+                    "state": "OK",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 72,
+                    "date": "2026-08-31",
+                    "customer": "Natalie Sanders",
+                    "model": "911 Targa 4S",
+                    "year": 2024,
+                    "price": 179000.0,
+                    "mileage": 900,
+                    "payMethod": "Bank Transfer",
+                    "city": "Arlington",
+                    "state": "TX",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 73,
+                    "date": "2026-09-09",
+                    "customer": "Easton Price",
+                    "model": "Panamera 4",
+                    "year": 2023,
+                    "price": 109000.0,
+                    "mileage": 6300,
+                    "payMethod": "Credit Card",
+                    "city": "New Orleans",
+                    "state": "LA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 74,
+                    "date": "2026-09-17",
+                    "customer": "Maya Bennett",
+                    "model": "Taycan Cross Turismo",
+                    "year": 2024,
+                    "price": 139000.0,
+                    "mileage": 1500,
+                    "payMethod": "Lease",
+                    "city": "Wichita",
+                    "state": "KS",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 75,
+                    "date": "2026-09-28",
+                    "customer": "Colton Wood",
+                    "model": "Macan Electric",
+                    "year": 2026,
+                    "price": 79000.0,
+                    "mileage": 0,
+                    "payMethod": "Wire Transfer",
+                    "city": "Cleveland",
+                    "state": "OH",
+                    "status": "Pending",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 76,
+                    "date": "2026-10-06",
+                    "customer": "Leah Barnes",
+                    "model": "911 GT3",
+                    "year": 2024,
+                    "price": 225000.0,
+                    "mileage": 300,
+                    "payMethod": "Cash",
+                    "city": "Tampa",
+                    "state": "FL",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 77,
+                    "date": "2026-10-16",
+                    "customer": "Asher Ross",
+                    "model": "718 Cayman S",
+                    "year": 2022,
+                    "price": 91000.0,
+                    "mileage": 11500,
+                    "payMethod": "Financing",
+                    "city": "Bakersfield",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 78,
+                    "date": "2026-10-29",
+                    "customer": "Audrey Henderson",
+                    "model": "Cayenne E-Hybrid",
+                    "year": 2025,
+                    "price": 108000.0,
+                    "mileage": 50,
+                    "payMethod": "Bank Transfer",
+                    "city": "Aurora",
+                    "state": "CO",
+                    "status": "In Transit",
+                    "powertrain": "Híbrido (PHEV)"
+          },
+          {
+                    "id": 79,
+                    "date": "2026-11-30",
+                    "customer": "Delilah Coleman",
+                    "model": "911 Carrera GTS",
+                    "year": 2024,
+                    "price": 164500.0,
+                    "mileage": 500,
+                    "payMethod": "Wire Transfer",
+                    "city": "Anaheim",
+                    "state": "CA",
+                    "status": "Cancelled",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 80,
+                    "date": "2026-12-11",
+                    "customer": "Ezra Coleman",
+                    "model": "Taycan GTS",
+                    "year": 2024,
+                    "price": 145000.0,
+                    "mileage": 800,
+                    "payMethod": "Wire Transfer",
+                    "city": "Anaheim",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 81,
+                    "date": "2026-12-24",
+                    "customer": "Claire Jenkins",
+                    "model": "911 Carrera Cabriolet",
+                    "year": 2023,
+                    "price": 162000.0,
+                    "mileage": 4100,
+                    "payMethod": "Credit Card",
+                    "city": "Santa Ana",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 82,
+                    "date": "2026-12-31",
+                    "customer": "Ruby Perry",
+                    "model": "Macan S",
+                    "year": 2023,
+                    "price": 72400.0,
+                    "mileage": 3200,
+                    "payMethod": "ACH Payment",
+                    "city": "Corpus Christi",
+                    "state": "TX",
+                    "status": "Pending",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 83,
+                    "date": "2026-12-28",
+                    "customer": "Jeremiah Perry",
+                    "model": "Panamera 4 E-Hybrid",
+                    "year": 2025,
+                    "price": 135000.0,
+                    "mileage": 100,
+                    "payMethod": "Lease",
+                    "city": "Corpus Christi",
+                    "state": "TX",
+                    "status": "In Transit",
+                    "powertrain": "Híbrido (PHEV)"
+          },
+          {
+                    "id": 84,
+                    "date": "2027-01-15",
+                    "customer": "Hudson Powell",
+                    "model": "Macan T",
+                    "year": 2024,
+                    "price": 67000.0,
+                    "mileage": 1200,
+                    "payMethod": "Wire Transfer",
+                    "city": "Riverside",
+                    "state": "CA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 85,
+                    "date": "2027-01-29",
+                    "customer": "Paisley Long",
+                    "model": "Cayenne S",
+                    "year": 2024,
+                    "price": 115000.0,
+                    "mileage": 900,
+                    "payMethod": "Cash",
+                    "city": "St. Louis",
+                    "state": "MO",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 86,
+                    "date": "2027-02-11",
+                    "customer": "Everly Patterson",
+                    "model": "718 Boxster GTS",
+                    "year": 2023,
+                    "price": 105000.0,
+                    "mileage": 3400,
+                    "payMethod": "Bank Transfer",
+                    "city": "Pittsburgh",
+                    "state": "PA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 87,
+                    "date": "2027-02-28",
+                    "customer": "Sadie Hughes",
+                    "model": "Taycan Turbo S",
+                    "year": 2025,
+                    "price": 218000.0,
+                    "mileage": 100,
+                    "payMethod": "Wire Transfer",
+                    "city": "Cincinnati",
+                    "state": "OH",
+                    "status": "Shipped",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 88,
+                    "date": "2027-03-05",
+                    "customer": "Parker Hughes",
+                    "model": "911 Turbo",
+                    "year": 2023,
+                    "price": 215000.0,
+                    "mileage": 2500,
+                    "payMethod": "Financing",
+                    "city": "Cincinnati",
+                    "state": "OH",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 89,
+                    "date": "2027-03-18",
+                    "customer": "Nova Flores",
+                    "model": "Taycan Cross Turismo",
+                    "year": 2025,
+                    "price": 145000.0,
+                    "mileage": 100,
+                    "payMethod": "Wire Transfer",
+                    "city": "Anchorage",
+                    "state": "AK",
+                    "status": "In Transit",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 90,
+                    "date": "2027-04-02",
+                    "customer": "Eden Washington",
+                    "model": "Macan",
+                    "year": 2023,
+                    "price": 61000.0,
+                    "mileage": 8900,
+                    "payMethod": "Credit Card",
+                    "city": "Plano",
+                    "state": "TX",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 91,
+                    "date": "2027-04-30",
+                    "customer": "Elena Butler",
+                    "model": "Panamera Turbo S",
+                    "year": 2024,
+                    "price": 192500.0,
+                    "mileage": 450,
+                    "payMethod": "Crypto Payment",
+                    "city": "Newark",
+                    "state": "NJ",
+                    "status": "Awaiting Delivery",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 92,
+                    "date": "2027-05-12",
+                    "customer": "Emerson Butler",
+                    "model": "Cayenne",
+                    "year": 2024,
+                    "price": 95000.0,
+                    "mileage": 1400,
+                    "payMethod": "Lease",
+                    "city": "Newark",
+                    "state": "NJ",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 93,
+                    "date": "2027-05-27",
+                    "customer": "Kennedy Simmons",
+                    "model": "Panamera 4S",
+                    "year": 2023,
+                    "price": 132000.0,
+                    "mileage": 5100,
+                    "payMethod": "Wire Transfer",
+                    "city": "Durham",
+                    "state": "NC",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 94,
+                    "date": "2027-06-30",
+                    "customer": "Emilia Foster",
+                    "model": "718 Cayman GT4 RS",
+                    "year": 2024,
+                    "price": 176500.0,
+                    "mileage": 250,
+                    "payMethod": "Cash",
+                    "city": "Lincoln",
+                    "state": "NE",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 95,
+                    "date": "2027-06-18",
+                    "customer": "JOSEPH Foster",
+                    "model": "911 Carrera Cabriolet",
+                    "year": 2024,
+                    "price": 168000.0,
+                    "mileage": 800,
+                    "payMethod": "Bank Transfer",
+                    "city": "Lincoln",
+                    "state": "NE",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 96,
+                    "date": "2027-07-03",
+                    "customer": "Adeline Gonzales",
+                    "model": "718 Spyder RS",
+                    "year": 2025,
+                    "price": 195000.0,
+                    "mileage": 0,
+                    "payMethod": "Cash",
+                    "city": "Jersey City",
+                    "state": "NJ",
+                    "status": "In Transit",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 97,
+                    "date": "2027-07-22",
+                    "customer": "Bentley Bryant",
+                    "model": "Taycan",
+                    "year": 2023,
+                    "price": 92000.0,
+                    "mileage": 7800,
+                    "payMethod": "Crypto Payment",
+                    "city": "Boise",
+                    "state": "ID",
+                    "status": "Delivered",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 98,
+                    "date": "2027-08-08",
+                    "customer": "Quinn Alexander",
+                    "model": "Macan GTS",
+                    "year": 2024,
+                    "price": 82500.0,
+                    "mileage": 500,
+                    "payMethod": "Financing",
+                    "city": "Norfolk",
+                    "state": "VA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 99,
+                    "date": "2027-08-31",
+                    "customer": "Kinsley Russell",
+                    "model": "911 Dakar",
+                    "year": 2024,
+                    "price": 278000.0,
+                    "mileage": 120,
+                    "payMethod": "Wire Transfer",
+                    "city": "Scottsdale",
+                    "state": "AZ",
+                    "status": "Pending Review",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 100,
+                    "date": "2027-09-19",
+                    "customer": "Piper Russell",
+                    "model": "Cayenne",
+                    "year": 2024,
+                    "price": 97000.0,
+                    "mileage": 600,
+                    "payMethod": "Wire Transfer",
+                    "city": "Scottsdale",
+                    "state": "AZ",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 101,
+                    "date": "2027-09-25",
+                    "customer": "Skyler Griffin",
+                    "model": "911 Targa 4",
+                    "year": 2024,
+                    "price": 161000.0,
+                    "mileage": 400,
+                    "payMethod": "Credit Card",
+                    "city": "Chesapeake",
+                    "state": "VA",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 102,
+                    "date": "2027-10-01",
+                    "customer": "Reagan Diaz",
+                    "model": "Taycan GTS",
+                    "year": 2025,
+                    "price": 148000.0,
+                    "mileage": 0,
+                    "payMethod": "Bank Transfer",
+                    "city": "Irvine",
+                    "state": "CA",
+                    "status": "Pending",
+                    "powertrain": "100% Elétrico (BEV)"
+          },
+          {
+                    "id": 103,
+                    "date": "2027-10-31",
+                    "customer": "Naomi Hayes",
+                    "model": "Cayenne Turbo GT",
+                    "year": 2025,
+                    "price": 248000.0,
+                    "mileage": 50,
+                    "payMethod": "Lease",
+                    "city": "Toledo",
+                    "state": "OH",
+                    "status": "Awaiting Review",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 104,
+                    "date": "2027-10-21",
+                    "customer": "Mackenzie Hayes",
+                    "model": "Macan T",
+                    "year": 2023,
+                    "price": 65500.0,
+                    "mileage": 6200,
+                    "payMethod": "Wire Transfer",
+                    "city": "Toledo",
+                    "state": "OH",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          },
+          {
+                    "id": 105,
+                    "date": "2027-11-03",
+                    "customer": "Ian Myers",
+                    "model": "Cayenne Coupe",
+                    "year": 2024,
+                    "price": 118000.0,
+                    "mileage": 300,
+                    "payMethod": "Lease",
+                    "city": "Lubbock",
+                    "state": "TX",
+                    "status": "Delivered",
+                    "powertrain": "100% Combustão"
+          }
+];
+
+        let chartQ1Instance = null;
+        let chartQ2Instance = null;
+        let chartQ3Instance = null;
+
+        function initDashboard() {
+            populateDropdowns();
+            updateDashboard();
+            setupEventListeners();
+        }
+
+        function populateDropdowns() {
+            const models = [...new Set(porscheSalesData.map(i => i.model))].sort();
+            const states = [...new Set(porscheSalesData.map(i => i.state))].sort();
+            const pays = [...new Set(porscheSalesData.map(i => i.payMethod))].sort();
+            const years = [...new Set(porscheSalesData.map(i => i.year))].sort((a,b) => b - a);
+
+            fillSelect('filterModel', models);
+            fillSelect('filterState', states);
+            fillSelect('filterPay', pays);
+            fillSelect('filterYear', years);
+        }
+
+        function fillSelect(id, items) {
+            const select = document.getElementById(id);
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.textContent = item;
+                select.appendChild(opt);
+            });
+        }
+
+        function setupEventListeners() {
+            ['filterModel', 'filterState', 'filterPay', 'filterYear'].forEach(id => {
+                document.getElementById(id).addEventListener('change', updateDashboard);
+            });
+
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                document.getElementById('filterModel').value = '';
+                document.getElementById('filterState').value = '';
+                document.getElementById('filterPay').value = '';
+                document.getElementById('filterYear').value = '';
+                updateDashboard();
+            });
+        }
+
+        function getFilteredData() {
+            const fModel = document.getElementById('filterModel').value;
+            const fState = document.getElementById('filterState').value;
+            const fPay = document.getElementById('filterPay').value;
+            const fYear = document.getElementById('filterYear').value;
+
+            return porscheSalesData.filter(item => {
+                return (!fModel || item.model === fModel) &&
+                       (!fState || item.state === fState) &&
+                       (!fPay || item.payMethod === fPay) &&
+                       (!fYear || item.year == fYear);
+            });
+        }
+
+        function formatCurrency(val) {
+            if (val >= 1e6) return '$' + (val / 1e6).toFixed(2) + 'M';
+            if (val >= 1e3) return '$' + (val / 1e3).toFixed(1) + 'k';
+            return '$' + val.toFixed(0);
+        }
+
+        function formatFullCurrency(val) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
+        }
+
+        function updateDashboard() {
+            const data = getFilteredData();
+
+            // KPIs
+            const totalVolume = data.length;
+            const totalRevenue = data.reduce((acc, curr) => acc + curr.price, 0);
+            const avgTicket = totalVolume > 0 ? totalRevenue / totalVolume : 0;
+            
+            const deliveredCount = data.filter(i => i.status === 'Delivered').length;
+            const deliveryRate = totalVolume > 0 ? (deliveredCount / totalVolume) * 100 : 0;
+
+            const ePerfRevenue = data.filter(i => i.powertrain !== '100% Combustão').reduce((acc, curr) => acc + curr.price, 0);
+            const ePerfRate = totalRevenue > 0 ? (ePerfRevenue / totalRevenue) * 100 : 0;
+
+            document.getElementById('kpiRevenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('kpiVolume').textContent = totalVolume + ' un';
+            document.getElementById('kpiTicket').textContent = formatCurrency(avgTicket);
+            document.getElementById('kpiDeliveryRate').textContent = deliveryRate.toFixed(1) + '%';
+            document.getElementById('kpiEPerformance').textContent = ePerfRate.toFixed(1) + '%';
+            document.getElementById('rowCount').textContent = `${totalVolume} de ${porscheSalesData.length} registros`;
+
+            renderCharts(data);
+            renderTable(data);
+        }
+
+        function renderCharts(data) {
+            const redColor = '#d5001c';
+            const redHover = '#b00017';
+            const textMuted = '#94a3b8';
+            const borderColor = '#222634';
+
+            // --- GRÁFICO 1: Pergunta 1 (Rentabilidade e Mix - Receita & Ticket Médio por Modelo) ---
+            const modelMap = {};
+            data.forEach(item => {
+                if (!modelMap[item.model]) modelMap[item.model] = { revenue: 0, count: 0 };
+                modelMap[item.model].revenue += item.price;
+                modelMap[item.model].count += 1;
+            });
+
+            const sortedModels = Object.entries(modelMap)
+                .map(([model, obj]) => ({ model, revenue: obj.revenue, avgTicket: obj.revenue / obj.count }))
+                .sort((a, b) => b.revenue - a.revenue)
+                .slice(0, 8);
+
+            const ctx1 = document.getElementById('chartQ1').getContext('2d');
+            if (chartQ1Instance) chartQ1Instance.destroy();
+            chartQ1Instance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: sortedModels.map(i => i.model),
+                    datasets: [{
+                        label: 'Receita Total ($)',
+                        data: sortedModels.map(i => i.revenue),
+                        backgroundColor: redColor,
+                        hoverBackgroundColor: redHover,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const item = sortedModels[context.dataIndex];
+                                    return [
+                                        ` Receita: ${formatFullCurrency(item.revenue)}`,
+                                        ` Ticket Médio: ${formatFullCurrency(item.avgTicket)}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: textMuted, font: { size: 10 }, callback: val => '$' + (val/1e3).toFixed(0) + 'k' },
+                            grid: { color: borderColor }
+                        },
+                        y: {
+                            ticks: { color: '#e2e8f0', font: { size: 11 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // --- GRÁFICO 2: Pergunta 2 (Eletrificação - Donut Powertrain) ---
+            const pwtMap = { '100% Combustão': 0, '100% Elétrico (BEV)': 0, 'Híbrido (PHEV)': 0 };
+            data.forEach(item => {
+                if (pwtMap[item.powertrain] !== undefined) pwtMap[item.powertrain] += item.price;
+            });
+
+            const ctx2 = document.getElementById('chartQ2').getContext('2d');
+            if (chartQ2Instance) chartQ2Instance.destroy();
+            chartQ2Instance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(pwtMap),
+                    datasets: [{
+                        data: Object.values(pwtMap),
+                        backgroundColor: ['#222634', '#d5001c', '#e2e8f0'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#e2e8f0', font: { size: 11 }, boxWidth: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const val = context.raw;
+                                    const total = Object.values(pwtMap).reduce((a, b) => a + b, 0);
+                                    const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                                    return ` ${context.label}: ${formatFullCurrency(val)} (${pct}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+
+            // --- GRÁFICO 3: Pergunta 3 (Saúde Operacional - Status de Entrega por Forma de Pagamento) ---
+            const payMethods = [...new Set(data.map(i => i.payMethod))].sort();
+            const statuses = [
+                'Delivered',
+                'Shipped',
+                'In Transit',
+                'Awaiting Delivery',
+                'Awaiting Pickup',
+                'Pending',
+                'Pending Approval',
+                'Pending Review',
+                'Awaiting Review',
+                'Cancelled'
+            ];
+            const statusColors = {
+                'Delivered': '#22c55e',
+                'Shipped': '#10b981',
+                'In Transit': '#3b82f6',
+                'Awaiting Delivery': '#06b6d4',
+                'Awaiting Pickup': '#8b5cf6',
+                'Pending': '#eab308',
+                'Pending Approval': '#f59e0b',
+                'Pending Review': '#f97316',
+                'Awaiting Review': '#fb923c',
+                'Cancelled': '#d5001c'
+            };
+
+            const datasets = statuses.map(status => ({
+                label: status,
+                data: payMethods.map(pay => data.filter(i => i.payMethod === pay && i.status === status).length),
+                backgroundColor: statusColors[status],
+                borderRadius: 4
+            }));
+
+            const ctx3 = document.getElementById('chartQ3').getContext('2d');
+            if (chartQ3Instance) chartQ3Instance.destroy();
+            chartQ3Instance = new Chart(ctx3, {
+                type: 'bar',
+                data: { labels: payMethods, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#e2e8f0', font: { size: 11 }, boxWidth: 12 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#e2e8f0', font: { size: 10 } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: { color: textMuted, font: { size: 10 }, stepSize: 1 },
+                            grid: { color: borderColor }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-porsche-border/40 transition-colors';
+                
+                let statusBadge = '';
+                if(item.status === 'Delivered') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-green-500/10 text-green-400 border border-green-500/20 font-medium">' + item.status + '</span>';
+                else if(item.status === 'Cancelled') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-red-500/10 text-red-400 border border-red-500/20 font-medium">' + item.status + '</span>';
+                else if(['In Transit', 'Shipped', 'Awaiting Delivery', 'Awaiting Pickup'].includes(item.status)) statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 font-medium">' + item.status + '</span>';
+                else statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-medium">' + item.status + '</span>';
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-mono text-porsche-red font-bold">#${item.id}</td>
+                    <td class="py-3 px-4">${item.date}</td>
+                    <td class="py-3 px-4 font-medium">${item.customer}</td>
+                    <td class="py-3 px-4">${item.model}</td>
+                    <td class="py-3 px-4">${item.year}</td>
+                    <td class="py-3 px-4">${item.city}, ${item.state}</td>
+                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[10px] bg-porsche-bg text-porsche-silver border border-porsche-border">${item.payMethod}</span></td>
+                    <td class="py-3 px-4">${statusBadge}</td>
+                    <td class="py-3 px-4 text-right font-semibold text-white">${formatFullCurrency(item.price)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
