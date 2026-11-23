@@ -134,8 +134,8 @@ porsche-executive-dashboard/
 ├── README.md
 │
 └── assets/
-    ├── dashboard-visao-geral.png
-    └── dashboard-filtro-718-cayman.png
+    ├── visao-geral-dashboard.png
+    └── filtro-porsche-718-cayman.png
 ```
 
 - `index.html`: contém a estrutura visual, os estilos, os dados e a lógica de funcionamento da dashboard.
